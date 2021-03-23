@@ -28,5 +28,3 @@ Ce projet a été réalisé dans le cadre de la formation de Web Developer à [B
 
 Le projet est presque fini sauf la fonctionnalité de send mail.  
 Je dois revenir dessus pour améliorer et organiser plus mon code et changer le style.
-
-[Voilà :D](https://zena-alsibaai.github.io/php-order-form/)
