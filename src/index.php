@@ -71,10 +71,9 @@ function valid_data($data) {
 // Define variables to empty values  
 $email= $street = $streetNumber = $city = $zipCode = "";
 $emailErr = $streetErr = $streetNumberErr = $cityErr = $zipCodeErr = "";
-$successMessage ="";
-$errorMessage ="";
-
-
+$successMessage = $errorMessage ="";
+$menuErr = $menuSelect ="";
+$deliveryTime="";
 // ========= Required Fields =========
 
 //  if (empty($_POST["email"])) {
@@ -104,7 +103,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $street = valid_data($_POST["street"]);
     }
     // ========= Street-number Validation =========
-
     if (!empty($_POST["streetnumber"])) {
         $streetNumber = valid_data($_POST["streetnumber"]);
         // check if street number  isn't in numeric format
@@ -124,22 +122,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
            $zipCodeErr = '<div class="alert alert-danger" role="alert">Only numeric value is allowed !</div>';
        }
     }
-        
+    // ========= Checkbox =========
+    if(!isset($_POST['products'])){
+        $menuErr = '<div class = "alert alert-danger" role = "alert">Invalid Selection</div>';
+    }
+    else{
+        $menuSelect= $_POST['products'];
+    }     
 }
 // ========= Submit button =========
-
 if(isset($_POST['submit'])) {  
-    if($emailErr == "" && $streetErr == "" && $streetNumberErr == "" && $cityErr == "" && $zipCodeErr == "") {  
+    if($emailErr == "" && $streetErr == "" && $streetNumberErr == "" && $cityErr == "" && $zipCodeErr == "" ) {  
         $successMessage = '<div class="alert alert-info" role="alert">You have sucessfully registered.</div>';  
     }else {  
         $errorMessage = '<div class="alert alert-danger" role="alert">You did not filled up the form correctly.</div>';  
     }
-            // ========= Set local hour =========
+    // ========= Set local hour =========
     $localtime = localtime();
     $minute = $localtime[1];// localtime() return un array. [1] the index of the M & H
     $hour = $localtime[2]+1;
     if ($minute < 10){
-        $minute = 0 .$mintue;
+        $minute = 0 . $minute;
     }
     // var_dump($localtime);
     // echo $hour;
@@ -147,15 +150,17 @@ if(isset($_POST['submit'])) {
 
     if(isset($_POST['express_delivery'])){
         $minute = $minute + 30;
-
         if ($minute >= 60){
-            $hour =$hour + 1;
+            $hour =$hour - 1;
             $minute = $minute - 60;
+            $deliveryTime = '<div class="alert alert-info" role="alert">Your order will arrive at : ' . $hour . ' H ' . $minute. '</div>';
+        }else{
+            $deliveryTime ='<div class="alert alert-info" role="alert">Your order will arrive at : ' . $hour . ' H ' . $minute. '</div>';
         }
-        $time = $hour. 'h' .$minute;
     }else{
-        $time = $hour +1 .'h'.$minute; // +1h Pour l'heur de livraison
-        $successMessage = '<div class="alert alert-info text-center" role="alert">You have sucessfully registered.</div>'; 
+        $deliveryTime = '<div class="alert alert-info" role="alert">Your order will arrive at : ' . $hour +1 . ' H ' . $minute.  '</div>';
     }
+   
+ 
 }
 require 'form-view.php';

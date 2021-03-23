@@ -70,7 +70,7 @@
             </div>
         </fieldset>
 
-        <fieldset>
+        <fieldset >
             <legend>Products</legend>
             <?php foreach ($products AS $i => $product): ?>
                 <label>
@@ -83,26 +83,16 @@
             <input type="checkbox" name="express_delivery" value="5" /> 
             Express delivery (+ 5 EUR) 
            
-        </label>
-        <?php echo $successMessage; ?>
-            
+        </label>    
         <button type="submit" class="btn btn-primary" name="submit">Order!</button>
+        <?php 
+        echo $menuErr ."<br>"; 
+        echo  $deliveryTime ."<br>";
+         ?>
+
         
-        <?php
-                pre_r($_POST);
-                if (isset($_POST["submit"])){
-                    echo $email . "<br>";
-                    echo $street . "<br>";
-                    echo $streetNumber . "<br>";
-                    echo $city  . "<br>";
-                    echo $zipCode . "<br>";
-                }
-                function pre_r ($array) {
-                    echo '<pre>';
-                    print_r($array);
-                    echo '<pre>';
-                }
-        ?>
+        
+        
     </form>
 
 
