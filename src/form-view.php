@@ -28,8 +28,8 @@
     <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <div class="form-row">
             <div class="form-group col-md-6">
-            <?php echo $successMessage; ?>
-            <?php echo $errorMessage; ?>
+            
+            <?php echo $message; ?>
                 <label for="email">E-mail:</label>
                 <span class="error">*</span>
                 <?php echo $emailErr; ?>
@@ -86,8 +86,15 @@
         </label>    
         <button type="submit" class="btn btn-primary" name="submit">Order!</button>
         <?php 
-        echo $menuErr ."<br>"; 
-        echo  $deliveryTime ."<br>";
+        echo $menuErr ."<br>";
+        // ========= Checkbox ========= 
+        if(!isset($_POST['products'])){
+            $menuErr = '<div class = "alert alert-danger" role = "alert">Invalid Selection</div>';
+        }
+        else{
+            $menuSelect= $_POST['products'];
+            echo $deliveryTime;
+        }
          ?>
 
         

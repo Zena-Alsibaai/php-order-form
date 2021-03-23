@@ -71,7 +71,7 @@ function valid_data($data) {
 // Define variables to empty values  
 $email= $street = $streetNumber = $city = $zipCode = "";
 $emailErr = $streetErr = $streetNumberErr = $cityErr = $zipCodeErr = "";
-$successMessage = $errorMessage ="";
+$message ="";
 $menuErr = $menuSelect ="";
 $deliveryTime="";
 // ========= Required Fields =========
@@ -89,78 +89,90 @@ $deliveryTime="";
 //         }
 //     }
 // ========= Form Validation =========
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // ========= Email Validation =========
-    if (!empty($_POST["email"])) {
-        $email = valid_data($_POST["email"]);
-      // check if e-mail address isn't in valid format
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $emailErr = '<div class="alert alert-danger" role="alert">Invalid Email !</div>';
-        }
-    }
-    // ========= Street Validation =========
-    if (!empty($_POST["street"])) {
-        $street = valid_data($_POST["street"]);
-    }
-    // ========= Street-number Validation =========
-    if (!empty($_POST["streetnumber"])) {
-        $streetNumber = valid_data($_POST["streetnumber"]);
-        // check if street number  isn't in numeric format
-        if (!is_numeric($streetNumber)) {
-           $streetNumberErr = '<div class="alert alert-danger" role="alert">Only numeric value is allowed !</div>';
-       }
-    }
-    // ========= City  =========
-    if (!empty($_POST["city"])) {
-        $city = valid_data($_POST["city"]);
-    } 
-    // ========= Zipcode =========
-    if (!empty($_POST["zipcode"])) {
-        $zipCode = valid_data($_POST["zipcode"]);
-        // check if zipcode  isn't in numeric format
-        if (! is_numeric($zipCode)) {
-           $zipCodeErr = '<div class="alert alert-danger" role="alert">Only numeric value is allowed !</div>';
-       }
-    }
-    // ========= Checkbox =========
-    if(!isset($_POST['products'])){
-        $menuErr = '<div class = "alert alert-danger" role = "alert">Invalid Selection</div>';
-    }
-    else{
-        $menuSelect= $_POST['products'];
-    }     
-}
+
+
 // ========= Submit button =========
-if(isset($_POST['submit'])) {  
+if(isset($_POST['submit'])) { 
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        // ========= Email Validation =========
+        if (!empty($_POST["email"])) {
+            $email = valid_data($_POST["email"]);
+          // check if e-mail address isn't in valid format
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $emailErr = '<div class="alert alert-danger" role="alert">Invalid Email !</div>';
+            }
+        }
+        // ========= Street Validation =========
+        if (!empty($_POST["street"])) {
+            $street = valid_data($_POST["street"]);
+        }
+        // ========= Street-number Validation =========
+        if (!empty($_POST["streetnumber"])) {
+            $streetNumber = valid_data($_POST["streetnumber"]);
+            // check if street number  isn't in numeric format
+            if (!is_numeric($streetNumber)) {
+               $streetNumberErr = '<div class="alert alert-danger" role="alert">Only numeric value is allowed !</div>';
+           }
+        }
+        // ========= City  =========
+        if (!empty($_POST["city"])) {
+            $city = valid_data($_POST["city"]);
+        } 
+        // ========= Zipcode =========
+        if (!empty($_POST["zipcode"])) {
+            $zipCode = valid_data($_POST["zipcode"]);
+            // check if zipcode  isn't in numeric format
+            if (! is_numeric($zipCode)) {
+               $zipCodeErr = '<div class="alert alert-danger" role="alert">Only numeric value is allowed !</div>';
+           }
+        }
+          // ========= Set local hour =========
+        $localtime = localtime();
+        $minute = $localtime[1];// localtime() return un array. [1] the index of the Minute & [2]Hour
+        $hour = $localtime[2]+1;
+        
+        if(isset($_POST['express_delivery'])){
+            $minute = $minute + 30;
+            if ($minute >= 60){
+                $hour =$hour + 1;
+                $minute = $minute - 60; 
+            }
+            if ($minute < 10){
+                $minute = 0 . $minute;
+                }
+            $deliveryTime = '<div class="alert alert-info" role="alert">Your order will arrive at : ' . $hour . ' H ' . $minute . '</div>';
+            $totalValue = 5;      
+        }else{
+        $deliveryTime = '<div class="alert alert-info" role="alert">Your order will arrive at : ' . $hour +1 . ' H ' . $minute .  '</div>';
+        } 
+        
+          
+        //   if(!isset($_POST['products'])){
+        //     $menuErr = '<div class = "alert alert-danger" role = "alert">Invalid Selection</div>';
+        // }
+        // else{
+        //     $menuSelect= $_POST['products'];
+        //     echo $deliveryTime;
+        // }
+    }
+    
+
     if($emailErr == "" && $streetErr == "" && $streetNumberErr == "" && $cityErr == "" && $zipCodeErr == "" ) {  
-        $successMessage = '<div class="alert alert-info" role="alert">You have sucessfully registered.</div>';  
+        $message = '<div class="alert alert-info" role="alert">You have sucessfully registered.</div>';  
     }else {  
-        $errorMessage = '<div class="alert alert-danger" role="alert">You did not filled up the form correctly.</div>';  
+        $message = '<div class="alert alert-danger" role="alert">You did not filled up the form correctly.</div>';  
     }
-    // ========= Set local hour =========
-    $localtime = localtime();
-    $minute = $localtime[1];// localtime() return un array. [1] the index of the M & H
-    $hour = $localtime[2]+1;
-    if ($minute < 10){
-        $minute = 0 . $minute;
-    }
+  
     // var_dump($localtime);
     // echo $hour;
     // echo $minute;
-
-    if(isset($_POST['express_delivery'])){
-        $minute = $minute + 30;
-        if ($minute >= 60){
-            $hour =$hour - 1;
-            $minute = $minute - 60;
-            $deliveryTime = '<div class="alert alert-info" role="alert">Your order will arrive at : ' . $hour . ' H ' . $minute. '</div>';
-        }else{
-            $deliveryTime ='<div class="alert alert-info" role="alert">Your order will arrive at : ' . $hour . ' H ' . $minute. '</div>';
+    if(isset($_POST['products'])){
+        $products_select = $_POST['products'];
+        foreach($products_select AS $i => $choice){
+            $choice =$products[$i]['price'];
+            $totalValue += $choice;
         }
-    }else{
-        $deliveryTime = '<div class="alert alert-info" role="alert">Your order will arrive at : ' . $hour +1 . ' H ' . $minute.  '</div>';
+        $_SESSION ['total-price'] = $totalValue;
     }
-   
- 
 }
 require 'form-view.php';
